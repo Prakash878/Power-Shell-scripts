@@ -1,0 +1,89 @@
+
+
+#Create multiple stroage accounts using Powershell
+[int]$accounts = Read-Host "Please Provide No of Accounts To Be Created"
+#Creating Storage Account with LRS
+Write-Output "Creating LRS Accounts....~~~"
+foreach ($account in 1..$accounts) {
+    $RANDOM_NUMBER = Get-Random -Minimum 10000 -Maximum 99999
+    New-AzStorageAccount `
+        -ResourceGroupName ENGDEVOPSB06 `
+        -AccountName engdevopsb06x$RANDOM_NUMBER `
+        -Location eastus `
+        -SkuName Standard_LRS -Verbose
+    Write-Output "engdevopsb06x$RANDOM_NUMBER is created sucessfully."
+}
+#Creating Storage Account with GRS
+Write-Output "Creating GRS Accounts....~~~"
+foreach ($account in 1..$accounts) {
+    $RANDOM_NUMBER = Get-Random -Minimum 10000 -Maximum 99999
+    New-AzStorageAccount `
+        -ResourceGroupName ENGDEVOPSB06 `
+        -AccountName engdevopsb06x$RANDOM_NUMBER `
+        -Location eastus `
+        -SkuName Standard_GRS -Verbose
+    Write-Output "engdevopsb06x$RANDOM_NUMBER is created sucessfully."
+}
+#Creating Storage Account with ZRS
+Write-Output "Creating ZRS Accounts....~~~"
+foreach ($account in 1..$accounts) {
+    $RANDOM_NUMBER = Get-Random -Minimum 10000 -Maximum 99999
+    New-AzStorageAccount `
+        -ResourceGroupName ENGDEVOPSB06 `
+        -AccountName engdevopsb06x$RANDOM_NUMBER `
+        -Location eastus `
+        -SkuName Standard_ZRS -Verbose
+    Write-Output "engdevopsb06x$RANDOM_NUMBER is created sucessfully."
+}
+
+
+#Delete Storage Accounts in RG ENGDEVOPSB06
+$acc = Get-AzStorageAccount -ResourceGroupName ENGDEVOPSB06
+#Write-Output $acc.StorageAccountName
+foreach ($a in $acc.StorageAccountName) {
+    Write-Output "Deleting Storage Account $a"
+    echo "==========================================="
+    Remove-AzStorageAccount -ResourceGroupName "ENGDEVOPSB06" -AccountName $a -Force
+    Write-Output "Deletion of $a Completed"
+}
+
+
+#Delete Storage Accounts in RG ENGDEVOPSB06
+$accountss = Get-AzStorageAccount -ResourceGroupName ENGDEVOPSB06
+#Write-Output $acc.StorageAccountName
+foreach ($account in $accountss)
+{
+    $sku = $account.Sku.Name
+    $accname = $account.StorageAccountName
+    if ($sku -like "Standard_L*" -or  $sku -match "Standard_GRS" -or $sku -notlike "Standard_L*" -or $sku -notmatch "Standard_GRS" )
+    {
+        Write-Output "Deleting Storage Account $accname"
+        Write-Output "==========================================="
+        Remove-AzStorageAccount -ResourceGroupName "ENGDEVOPSB06" -AccountName $accname -Force
+        Write-Output "Deletion of $accname Completed"
+    }
+    else {
+        Write-Output "$accname is a ZRS Account and must not be deleted"
+    }
+}
+
+
+#Delete Storage Accounts in RG ENGDEVOPSB06
+$accountss = Get-AzStorageAccount -ResourceGroupName ENGDEVOPSB06
+#Write-Output $acc.StorageAccountName
+foreach ($account in $accountss)
+{
+    $sku = $account.Sku.Name
+    $accname = $account.StorageAccountName
+    if ($sku -like "Standard_LR*" -or  $sku -match "Standard_GRS")
+    {
+        Write-Output "Deleting Storage Account $accname"
+        Write-Output "==========================================="
+        Remove-AzStorageAccount -ResourceGroupName "ENGDEVOPSB06" -AccountName $accname -Force
+        Write-Output "Deletion of $accname Completed"
+    }
+    else {
+        Write-Output "$accname is a ZRS Account and must not be deleted"
+    }
+}
+
